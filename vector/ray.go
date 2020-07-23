@@ -8,7 +8,7 @@ type Ray struct {
 }
 
 func (r Ray) At(t float64) Vec3 {
-	o := &r.Origin
-	d := &r.Direction
-	return *o.AddV(*d.Mul(t))
+	o := r.Origin
+	d := r.Direction
+	return o.AddV(d.Mul(t))
 }

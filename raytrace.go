@@ -19,13 +19,12 @@ func colorf64(r, g, b, a float64) color.NRGBA {
 }
 
 func rayColor(r vec.Ray) color.NRGBA {
-	unitDirection := r.Direction
-	unitDirection.Normalize()
+	unitDirection := r.Direction.Normalize()
 	t := 0.5 * (unitDirection.Y + 1.0)
-	c1 := &vec.Vec3{1.0, 1.0, 1.0}
-	c2 := &vec.Vec3{0.5, 0.7, 1.0}
-	c1.Mul(1.0 - t).AddV(*c2.Mul(t))
-	return colorf64(c1.X, c1.Y, c1.Z, 1.0)
+	c1 := vec.Vec3{1.0, 1.0, 1.0}
+	c2 := vec.Vec3{0.5, 0.7, 1.0}
+	c3 := c1.Mul(1.0 - t).AddV(c2.Mul(t))
+	return colorf64(c3.X, c3.Y, c3.Z, 1.0)
 }
 
 func main() {
@@ -38,15 +37,9 @@ func main() {
 	var focalLength = 1.0
 
 	origin := vec.Vec3{0, 0, 0}
-	horizontal := vec.Vec3{viewportWidth, 0, 0}
-	vertical := vec.Vec3{0, viewportHeight, 0}
-	lowerLeftCorner := origin
-	h2 := horizontal
-	h2.Div(2.0)
-	v2 := vertical
-	v2.Div(2.0)
-	llc := &lowerLeftCorner
-	llc.SubV(h2).SubV(v2).SubV(vec.Vec3{0, 0, focalLength})
+	hor := vec.Vec3{viewportWidth, 0, 0}
+	vrt := vec.Vec3{0, viewportHeight, 0}
+	llc := origin.SubV(hor.Div(2.0)).SubV(vrt.Div(2.0)).SubV(vec.Vec3{0, 0, focalLength})
 
 	img := image.NewRGBA(image.Rect(0, 0, imageWidth, imageHeight))
 
@@ -54,14 +47,7 @@ func main() {
 		for i := 0; i < imageWidth; i++ {
 			u := float64(i) / float64(imageWidth-1)
 			v := 1.0 - float64(j)/float64(imageHeight-1)
-			dh := horizontal
-			dv := vertical
-			dh.Mul(u)
-			dv.Mul(v)
-			dir := *llc
-			dir.AddV(dh)
-			dir.AddV(dv)
-			dir.SubV(origin)
+			dir := llc.AddV(hor.Mul(u)).AddV(vrt.Mul(v)).SubV(origin)
 			ray := vec.Ray{Origin: origin, Direction: dir}
 			c := rayColor(ray)
 			img.Set(i, j, c)
