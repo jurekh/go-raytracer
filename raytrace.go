@@ -6,6 +6,7 @@ import (
 	"image/png"
 	vec "jurekh/raytracing/vector"
 	"log"
+	"math"
 	"os"
 )
 
@@ -19,12 +20,30 @@ func colorf64(r, g, b, a float64) color.NRGBA {
 }
 
 func rayColor(r vec.Ray) color.NRGBA {
+	var center = vec.Vec3{0.0, 0.0, -1.0}
+	var t = hitSphere(center, 0.5, r)
+	if t > 0.0 {
+		var N = r.At(t).SubV(center).Normalize()
+		return colorf64(N.X+1.0, N.Y+1.0, N.Z+1.0, 1.0)
+	}
 	unitDirection := r.Direction.Normalize()
-	t := 0.5 * (unitDirection.Y + 1.0)
+	t = 0.5 * (unitDirection.Y + 1.0)
 	c1 := vec.Vec3{1.0, 1.0, 1.0}
 	c2 := vec.Vec3{0.5, 0.7, 1.0}
 	c3 := c1.Mul(1.0 - t).AddV(c2.Mul(t))
 	return colorf64(c3.X, c3.Y, c3.Z, 1.0)
+}
+
+func hitSphere(center vec.Point3, radius float64, r vec.Ray) float64 {
+	var oc = r.Origin.SubV(center)
+	var a = r.Direction.LengthSquared()
+	var halfB = oc.Dot(r.Direction)
+	var c = oc.LengthSquared() - radius*radius
+	var discriminant = halfB*halfB - a*c
+	if discriminant < 0.0 {
+		return -1.0
+	}
+	return (-halfB - math.Sqrt(discriminant)) / a
 }
 
 func main() {
