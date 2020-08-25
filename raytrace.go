@@ -23,8 +23,9 @@ func rayColor(r vec.Ray) color.NRGBA {
 	var center = vec.Vec3{0.0, 0.0, -1.0}
 	var t = hitSphere(center, 0.5, r)
 	if t > 0.0 {
-		var N = r.At(t).SubV(center).Normalize()
-		return colorf64(N.X+1.0, N.Y+1.0, N.Z+1.0, 1.0)
+		var N = r.At(t).SubV(center).Normalize().AddV(vec.Vec3{1.0, 1.0, 1.0}).Div(2.0)
+		// fmt.Printf("r: %v, N: %v\n", r, N)
+		return colorf64(N.X, N.Y, N.Z, 1.0)
 	}
 	unitDirection := r.Direction.Normalize()
 	t = 0.5 * (unitDirection.Y + 1.0)
