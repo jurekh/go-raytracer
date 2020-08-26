@@ -20,17 +20,17 @@ func colorf64(r, g, b, a float64) color.NRGBA {
 }
 
 func rayColor(r vec.Ray) color.NRGBA {
-	var center = vec.Vec3{0.0, 0.0, -1.0}
+	var center = vec.Vec3{X: 0.0, Y: 0.0, Z: -1.0}
 	var t = hitSphere(center, 0.5, r)
 	if t > 0.0 {
-		var N = r.At(t).SubV(center).Normalize().AddV(vec.Vec3{1.0, 1.0, 1.0}).Div(2.0)
+		var N = r.At(t).SubV(center).Normalize().AddV(vec.Vec3{X: 1.0, Y: 1.0, Z: 1.0}).Div(2.0)
 		// fmt.Printf("r: %v, N: %v\n", r, N)
 		return colorf64(N.X, N.Y, N.Z, 1.0)
 	}
 	unitDirection := r.Direction.Normalize()
 	t = 0.5 * (unitDirection.Y + 1.0)
-	c1 := vec.Vec3{1.0, 1.0, 1.0}
-	c2 := vec.Vec3{0.5, 0.7, 1.0}
+	c1 := vec.Vec3{X: 1.0, Y: 1.0, Z: 1.0}
+	c2 := vec.Vec3{X: 0.5, Y: 0.7, Z: 1.0}
 	c3 := c1.Mul(1.0 - t).AddV(c2.Mul(t))
 	return colorf64(c3.X, c3.Y, c3.Z, 1.0)
 }
@@ -56,10 +56,10 @@ func main() {
 	var viewportWidth = aspectRatio * viewportHeight
 	var focalLength = 1.0
 
-	origin := vec.Vec3{0, 0, 0}
-	hor := vec.Vec3{viewportWidth, 0, 0}
-	vrt := vec.Vec3{0, viewportHeight, 0}
-	llc := origin.SubV(hor.Div(2.0)).SubV(vrt.Div(2.0)).SubV(vec.Vec3{0, 0, focalLength})
+	origin := vec.Vec3{X: 0, Y: 0, Z: 0}
+	hor := vec.Vec3{X: viewportWidth, Y: 0, Z: 0}
+	vrt := vec.Vec3{X: 0, Y: viewportHeight, Z: 0}
+	llc := origin.SubV(hor.Div(2.0)).SubV(vrt.Div(2.0)).SubV(vec.Vec3{X: 0, Y: 0, Z: focalLength})
 
 	img := image.NewRGBA(image.Rect(0, 0, imageWidth, imageHeight))
 
