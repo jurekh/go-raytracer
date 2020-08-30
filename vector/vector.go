@@ -81,3 +81,8 @@ func (v Vec3) LengthSquared() float64 {
 func (v Vec3) String() string {
 	return fmt.Sprintf("[%f, %f, %f]", v.X, v.Y, v.Z)
 }
+
+// DegToRad converts degrees to radians
+func DegToRad(deg float64) float64 {
+	return deg * math.Pi / 180.0
+}

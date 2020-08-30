@@ -19,16 +19,16 @@ func colorf64(r, g, b, a float64) color.NRGBA {
 	}
 }
 
-func rayColor(r vec.Ray) color.NRGBA {
-	var center = vec.Vec3{X: 0.0, Y: 0.0, Z: -1.0}
-	var t = hitSphere(center, 0.5, r)
-	if t > 0.0 {
-		var N = r.At(t).SubV(center).Normalize().AddV(vec.Vec3{X: 1.0, Y: 1.0, Z: 1.0}).Div(2.0)
-		// fmt.Printf("r: %v, N: %v\n", r, N)
+func rayColor(r vec.Ray, world *vec.HittableList) color.NRGBA {
+	hit, hr := (*world).Hit(r, 0, math.Inf(0))
+	if hit {
+		// fmt.Printf("Hit an object: %v\n", *hr)
+		var N = (*hr).WithNormal.Normal.AddV(vec.Vec3{X: 1.0, Y: 1.0, Z: 1.0}).Div(2.0)
 		return colorf64(N.X, N.Y, N.Z, 1.0)
 	}
+
 	unitDirection := r.Direction.Normalize()
-	t = 0.5 * (unitDirection.Y + 1.0)
+	t := 0.5 * (unitDirection.Y + 1.0)
 	c1 := vec.Vec3{X: 1.0, Y: 1.0, Z: 1.0}
 	c2 := vec.Vec3{X: 0.5, Y: 0.7, Z: 1.0}
 	c3 := c1.Mul(1.0 - t).AddV(c2.Mul(t))
@@ -48,10 +48,17 @@ func hitSphere(center vec.Point3, radius float64, r vec.Ray) float64 {
 }
 
 func main() {
+	// Image
 	var aspectRatio = 16.0 / 9.0
 	var imageWidth = 400
 	var imageHeight = int(float64(imageWidth) / aspectRatio)
 
+	// World
+	var world = vec.HittableList{}
+	(&world).Add(vec.Sphere{Center: vec.Point3{X: 0, Y: 0, Z: -1}, Radius: 0.5})
+	(&world).Add(vec.Sphere{Center: vec.Point3{X: 0, Y: -100.5, Z: -1}, Radius: 100})
+
+	// Camera
 	var viewportHeight = 2.0
 	var viewportWidth = aspectRatio * viewportHeight
 	var focalLength = 1.0
@@ -69,7 +76,7 @@ func main() {
 			v := 1.0 - float64(j)/float64(imageHeight-1)
 			dir := llc.AddV(hor.Mul(u)).AddV(vrt.Mul(v)).SubV(origin)
 			ray := vec.Ray{Origin: origin, Direction: dir}
-			c := rayColor(ray)
+			c := rayColor(ray, &world)
 			img.Set(i, j, c)
 		}
 	}
