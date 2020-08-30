@@ -4,6 +4,7 @@ import (
 	"image"
 	"image/color"
 	"image/png"
+	scn "jurekh/raytracing/scene"
 	vec "jurekh/raytracing/vector"
 	"log"
 	"math"
@@ -19,7 +20,7 @@ func colorf64(r, g, b, a float64) color.NRGBA {
 	}
 }
 
-func rayColor(r vec.Ray, world *vec.HittableList) color.NRGBA {
+func rayColor(r vec.Ray, world *scn.HittableList) color.NRGBA {
 	hit, hr := (*world).Hit(r, 0, math.Inf(0))
 	if hit {
 		// fmt.Printf("Hit an object: %v\n", *hr)
@@ -54,9 +55,9 @@ func main() {
 	var imageHeight = int(float64(imageWidth) / aspectRatio)
 
 	// World
-	var world = vec.HittableList{}
-	(&world).Add(vec.Sphere{Center: vec.Point3{X: 0, Y: 0, Z: -1}, Radius: 0.5})
-	(&world).Add(vec.Sphere{Center: vec.Point3{X: 0, Y: -100.5, Z: -1}, Radius: 100})
+	var world = scn.HittableList{}
+	(&world).Add(scn.Sphere{Center: vec.Point3{X: 0, Y: 0, Z: -1}, Radius: 0.5})
+	(&world).Add(scn.Sphere{Center: vec.Point3{X: 0, Y: -100.5, Z: -1}, Radius: 100})
 
 	// Camera
 	var viewportHeight = 2.0
