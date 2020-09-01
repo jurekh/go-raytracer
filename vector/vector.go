@@ -3,6 +3,7 @@ package vector
 import (
 	"fmt"
 	"math"
+	"math/rand"
 )
 
 // Vec3 represents a 3D vector with X, Y and Z as its component dimensions
@@ -85,4 +86,9 @@ func (v Vec3) String() string {
 // DegToRad converts degrees to radians
 func DegToRad(deg float64) float64 {
 	return deg * math.Pi / 180.0
+}
+
+// Random returs a uniform random number from range [min, max)
+func Random(min float64, max float64) float64 {
+	return min + (max-min)*rand.Float64()
 }

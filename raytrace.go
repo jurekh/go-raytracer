@@ -60,14 +60,7 @@ func main() {
 	(&world).Add(scn.Sphere{Center: vec.Point3{X: 0, Y: -100.5, Z: -1}, Radius: 100})
 
 	// Camera
-	var viewportHeight = 2.0
-	var viewportWidth = aspectRatio * viewportHeight
-	var focalLength = 1.0
-
-	origin := vec.Vec3{X: 0, Y: 0, Z: 0}
-	hor := vec.Vec3{X: viewportWidth, Y: 0, Z: 0}
-	vrt := vec.Vec3{X: 0, Y: viewportHeight, Z: 0}
-	llc := origin.SubV(hor.Div(2.0)).SubV(vrt.Div(2.0)).SubV(vec.Vec3{X: 0, Y: 0, Z: focalLength})
+	var camera = scn.NewCamera()
 
 	img := image.NewRGBA(image.Rect(0, 0, imageWidth, imageHeight))
 
@@ -75,8 +68,7 @@ func main() {
 		for i := 0; i < imageWidth; i++ {
 			u := float64(i) / float64(imageWidth-1)
 			v := 1.0 - float64(j)/float64(imageHeight-1)
-			dir := llc.AddV(hor.Mul(u)).AddV(vrt.Mul(v)).SubV(origin)
-			ray := vec.Ray{Origin: origin, Direction: dir}
+			ray := camera.GetRay(u, v)
 			c := rayColor(ray, &world)
 			img.Set(i, j, c)
 		}
